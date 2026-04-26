@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SafeGate - Manage Gatekeepers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body data-theme="dark">
+    <div id="toast-container" class="toast-container"></div>
+    <div id="app">
+        <!-- Admin View -->
+        <section id="admin-view" class="screen active">
+            <header class="app-header glass-header">
+                <button class="icon-btn" onclick="app.logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                <h2>Admin Dashboard</h2>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="app.openThemeSettings()"><i class="fa-solid fa-palette"></i></button>
+                    <button class="icon-btn"><i class="fa-solid fa-calendar-day"></i></button>
+                </div>
+            </header>
+            <div class="admin-layout">
+                <aside class="admin-sidebar">
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('dashboard')" id="nav-page-dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('students')" id="nav-page-students"><i class="fa-solid fa-users"></i> Students</div>
+                    <div class="sidebar-nav-item active" onclick="app.navigateToAdminPage('gatekeepers')" id="nav-page-gatekeepers"><i class="fa-solid fa-user-shield"></i> Gatekeepers</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('parents')" id="nav-page-parents"><i class="fa-solid fa-user-group"></i> Parents</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('id-cards')" id="nav-page-id-cards"><i class="fa-solid fa-address-card"></i> ID Cards</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('attendance')" id="nav-page-attendance"><i class="fa-solid fa-clipboard-user"></i> Attendance</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('notifications')" id="nav-page-notifications"><i class="fa-solid fa-bell"></i> Notifications</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('classes')" id="nav-page-classes"><i class="fa-solid fa-chalkboard"></i> Classes</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('settings')" id="nav-page-settings"><i class="fa-solid fa-gear"></i> Settings</div>
+                </aside>
+                
+                <main class="admin-main-content">
+                    <div id="page-gatekeepers" class="admin-page active">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="color: var(--text-muted);">Manage Gatekeepers</h3>
+                            <button class="btn btn-primary btn-sm" onclick="app.openGatekeeperModal()"><i class="fa-solid fa-plus"></i> Add Gatekeeper</button>
+                        </div>
+                        <div class="glass-panel">
+                            <div class="admin-toolbar">
+                                <div class="admin-filters">
+                                    <input type="text" id="gk-search" class="custom-input" placeholder="Search name or phone..." oninput="app.renderGatekeepers()">
+                                    <select id="gk-filter-status" class="custom-select" onchange="app.renderGatekeepers()">
+                                        <option value="all">All Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="table-container mt-4">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Phone Number</th>
+                                            <th>Assigned Gate</th>
+                                            <th>Status</th>
+                                            <th style="text-align: right;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gatekeepers-table-body">
+                                        <!-- Populated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+
+        <!-- Gatekeeper Form Modal -->
+        <div id="gatekeeper-modal" class="modal">
+            <div class="modal-content glass-panel bounce-in" style="max-width: 400px; padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <h2 id="gk-modal-title">Add Gatekeeper</h2>
+                    <button class="icon-btn" onclick="app.closeGatekeeperModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form id="gk-form" onsubmit="event.preventDefault(); app.saveGatekeeper();">
+                    <input type="hidden" id="gk-id">
+                    <div style="margin-bottom: 1rem; text-align: left;">
+                        <label class="text-muted" style="font-size:0.85rem;">Name *</label>
+                        <input type="text" id="gk-name" class="custom-input w-100" required>
+                    </div>
+                    <div style="margin-bottom: 1rem; text-align: left;">
+                        <label class="text-muted" style="font-size:0.85rem;">Phone Number * (e.g. +1234567890)</label>
+                        <input type="tel" id="gk-phone" class="custom-input w-100" required>
+                    </div>
+                    <div style="margin-bottom: 1rem; text-align: left;">
+                        <label class="text-muted" style="font-size:0.85rem;">Assigned Gate</label>
+                        <input type="text" id="gk-gate" class="custom-input w-100" placeholder="Main Gate (Optional)">
+                    </div>
+                    <div style="margin-bottom: 1.5rem; text-align: left;">
+                        <label class="text-muted" style="font-size:0.85rem;">Status</label>
+                        <select id="gk-status" class="custom-select w-100">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn btn-secondary w-100" onclick="app.closeGatekeeperModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Gatekeeper Profile & Logs Modal -->
+        <div id="gatekeeper-profile-modal" class="modal">
+            <div class="modal-content glass-panel bounce-in" style="max-width: 600px; padding: 2rem; width: 95%;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <h2 id="gk-profile-title">Gatekeeper Logs</h2>
+                    <button class="icon-btn" onclick="app.closeGatekeeperProfile()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="gatekeeper-summary" style="text-align: left; margin-bottom: 1.5rem; background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 8px;">
+                    <h3 id="gk-profile-name">Name</h3>
+                    <p id="gk-profile-gate" class="text-muted">Gate</p>
+                    <p id="gk-profile-stats" style="margin-top: 0.5rem; font-weight: bold; color: var(--text);">0 Total Scans</p>
+                </div>
+
+                <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Action</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gk-profile-logs-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> <!-- Close #app -->
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1WDzcL4c0e4g-wPHhCLKsehp8tjqKot4",
+            authDomain: "safegate-af378.firebaseapp.com",
+            projectId: "safegate-af378",
+            storageBucket: "safegate-af378.firebasestorage.app",
+            messagingSenderId: "164296559017",
+            appId: "1:164296559017:web:5c2aea0a001485404d1cb8",
+            measurementId: "G-2D89KKFCSR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+    </script>
+    <script src="app.js?v=2.2"></script>
+</body>
+</html>

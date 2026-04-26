@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SafeGate - Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body data-theme="dark">
+    <div id="toast-container" class="toast-container"></div>
+    <div id="app">
+        <!-- Admin Dashboard View -->
+        <section id="admin-view" class="screen active">
+            <header class="app-header glass-header">
+                <button class="icon-btn" onclick="app.logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                <h2>Admin Dashboard</h2>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="app.openThemeSettings()"><i class="fa-solid fa-palette"></i></button>
+                    <button class="icon-btn"><i class="fa-solid fa-calendar-day"></i></button>
+                </div>
+            </header>
+            <div class="admin-layout">
+                <aside class="admin-sidebar">
+                    <div class="sidebar-nav-item active" onclick="app.navigateToAdminPage('dashboard')" id="nav-page-dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('students')" id="nav-page-students"><i class="fa-solid fa-users"></i> Students</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('gatekeepers')" id="nav-page-gatekeepers"><i class="fa-solid fa-user-shield"></i> Gatekeepers</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('parents')" id="nav-page-parents"><i class="fa-solid fa-user-group"></i> Parents</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('id-cards')" id="nav-page-id-cards"><i class="fa-solid fa-address-card"></i> ID Cards</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('attendance')" id="nav-page-attendance"><i class="fa-solid fa-clipboard-user"></i> Attendance</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('notifications')" id="nav-page-notifications"><i class="fa-solid fa-bell"></i> Notifications</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('classes')" id="nav-page-classes"><i class="fa-solid fa-chalkboard"></i> Classes</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('settings')" id="nav-page-settings"><i class="fa-solid fa-gear"></i> Settings</div>
+                </aside>
+                
+                <main class="admin-main-content">
+                    <!-- Dashboard Page -->
+                    <div id="page-dashboard" class="admin-page active">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--text-muted);">Overview</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card glass-panel text-center">
+                                <i class="fa-solid fa-users stat-icon text-blue"></i>
+                                <h4 id="admin-stat-total">0</h4>
+                                <p>Total Students</p>
+                            </div>
+                            <div class="stat-card glass-panel text-center">
+                                <i class="fa-solid fa-clipboard-user stat-icon text-green"></i>
+                                <h4 id="admin-stat-present">0</h4>
+                                <p>Present Today</p>
+                            </div>
+                            <div class="stat-card glass-panel text-center">
+                                <i class="fa-solid fa-user-clock stat-icon text-warning"></i>
+                                <h4 id="admin-stat-missing">0</h4>
+                                <p>Not Arrived</p>
+                            </div>
+                            <div class="stat-card glass-panel text-center">
+                                <i class="fa-solid fa-school-flag stat-icon text-blue"></i>
+                                <h4 id="admin-stat-in">0</h4>
+                                <p>Currently Inside</p>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+
+        <!-- Theme Settings Modal (for Header palette icon) -->
+        <div id="theme-modal" class="modal">
+            <div class="modal-content glass-panel bounce-in" style="max-width: 400px; padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <h2>Theme Preferences</h2>
+                    <button class="icon-btn" onclick="app.closeThemeSettings()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label class="text-muted" style="font-size:0.85rem; display:block; margin-bottom: 0.5rem;">Display Mode</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-tertiary w-100" id="btn-theme-dark" onclick="app.setBaseTheme('dark')"><i class="fa-solid fa-moon"></i> Dark</button>
+                        <button class="btn btn-tertiary w-100" id="btn-theme-light" onclick="app.setBaseTheme('light')"><i class="fa-solid fa-sun"></i> Light</button>
+                    </div>
+                </div>
+
+                <div id="brand-theme-section" style="display: none; margin-bottom: 1.5rem; text-align: left;">
+                    <label class="text-muted" style="font-size:0.85rem;">School Brand Color (Primary)</label>
+                    <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem;">
+                        <input type="color" id="school-brand-color" class="custom-input" style="height: 48px; width: 64px; padding: 0.2rem;">
+                        <button class="btn btn-primary w-100" onclick="app.saveBrandColor()">Set Brand</button>
+                    </div>
+                    <p class="text-muted mt-2" style="font-size:0.75rem;">Note: Saving this updates the color globally for all linked users immediately.</p>
+                </div>
+            </div>
+        </div>
+    </div> <!-- Close #app -->
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1WDzcL4c0e4g-wPHhCLKsehp8tjqKot4",
+            authDomain: "safegate-af378.firebaseapp.com",
+            projectId: "safegate-af378",
+            storageBucket: "safegate-af378.firebasestorage.app",
+            messagingSenderId: "164296559017",
+            appId: "1:164296559017:web:5c2aea0a001485404d1cb8",
+            measurementId: "G-2D89KKFCSR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+    </script>
+    <script src="app.js?v=2.2"></script>
+</body>
+</html>

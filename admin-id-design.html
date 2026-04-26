@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SafeGate - Design ID Template</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body data-theme="dark">
+    <div id="toast-container" class="toast-container"></div>
+    <div id="app">
+        <section id="admin-view" class="screen active">
+            <header class="app-header glass-header">
+                <button class="icon-btn" onclick="app.logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                <h2>Admin Dashboard</h2>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="app.openThemeSettings()"><i class="fa-solid fa-palette"></i></button>
+                    <button class="icon-btn"><i class="fa-solid fa-calendar-day"></i></button>
+                </div>
+            </header>
+            <div class="admin-layout">
+                <aside class="admin-sidebar">
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('dashboard')" id="nav-page-dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('students')" id="nav-page-students"><i class="fa-solid fa-users"></i> Students</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('gatekeepers')" id="nav-page-gatekeepers"><i class="fa-solid fa-user-shield"></i> Gatekeepers</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('parents')" id="nav-page-parents"><i class="fa-solid fa-user-group"></i> Parents</div>
+                    <div class="sidebar-nav-item active" onclick="app.navigateToAdminPage('id-cards')" id="nav-page-id-cards"><i class="fa-solid fa-address-card"></i> ID Cards</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('attendance')" id="nav-page-attendance"><i class="fa-solid fa-clipboard-user"></i> Attendance</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('notifications')" id="nav-page-notifications"><i class="fa-solid fa-bell"></i> Notifications</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('classes')" id="nav-page-classes"><i class="fa-solid fa-chalkboard"></i> Classes</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('settings')" id="nav-page-settings"><i class="fa-solid fa-gear"></i> Settings</div>
+                </aside>
+                
+                <main class="admin-main-content">
+                    <div id="page-id-design" class="admin-page active">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 1rem;">
+                            <button class="btn btn-tertiary btn-sm" onclick="app.navigateToAdminPage('id-cards')"><i class="fa-solid fa-arrow-left"></i> Back to ID Cards</button>
+                            <button class="btn btn-primary btn-sm" onclick="app.saveIDTemplateCustomization()"><i class="fa-solid fa-cloud-arrow-up"></i> Save Settings</button>
+                        </div>
+                        <div class="id-customizer-layout">
+                            <div class="customizer-controls glass-panel">
+                                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Global Settings</h3>
+                                
+                                <div class="control-group">
+                                    <label class="section-label">School Logo URL</label>
+                                    <input type="text" id="id-config-logo" class="custom-input w-100" placeholder="https://..." oninput="app.updateIDPreview()">
+                                </div>
+                                <div class="control-group">
+                                    <label class="section-label">School Name</label>
+                                    <input type="text" id="id-config-name" class="custom-input w-100" oninput="app.updateIDPreview()">
+                                </div>
+                                <div class="control-group">
+                                    <label class="section-label">Address</label>
+                                    <input type="text" id="id-config-address" class="custom-input w-100" oninput="app.updateIDPreview()">
+                                </div>
+                                <div class="control-group">
+                                    <label class="section-label">Contact Number</label>
+                                    <input type="text" id="id-config-phone" class="custom-input w-100" oninput="app.updateIDPreview()">
+                                </div>
+                                <div class="control-group">
+                                    <label class="section-label">Card Brand Color</label>
+                                    <input type="color" id="id-config-color" class="custom-input w-100" style="height: 40px; padding:0.2rem;" oninput="app.updateIDPreview()">
+                                </div>
+                                <p class="text-hint mt-3">These details will be applied to all ID cards generated for this school.</p>
+                            </div>
+
+                            <div class="customizer-preview">
+                                <div class="preview-sticky">
+                                    <div class="template-selector mb-4">
+                                        <label class="section-label">Active Global Template</label>
+                                        <select id="id-config-template" class="custom-select w-100" onchange="app.updateIDPreview()">
+                                            <option value="vertical">Standard Vertical</option>
+                                            <option value="horizontal">Standard Horizontal</option>
+                                            <option value="minimal">Modern Minimal</option>
+                                            <option value="detailed">Detailed Corporate</option>
+                                            <option value="fauget">Fauget College</option>
+                                        </select>
+                                    </div>
+                                    <label class="section-label text-center mb-3" style="color:var(--primary)">LIVE PREVIEW</label>
+                                    <div class="template-preview-container" id="id-preview-render-area">
+                                        <!-- Real-time mock preview rendered here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1WDzcL4c0e4g-wPHhCLKsehp8tjqKot4",
+            authDomain: "safegate-af378.firebaseapp.com",
+            projectId: "safegate-af378",
+            storageBucket: "safegate-af378.firebasestorage.app",
+            messagingSenderId: "164296559017",
+            appId: "1:164296559017:web:5c2aea0a001485404d1cb8",
+            measurementId: "G-2D89KKFCSR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+    </script>
+    <script src="app.js?v=2.2"></script>
+</body>
+</html>

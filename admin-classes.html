@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SafeGate - Manage Classes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body data-theme="dark">
+    <div id="toast-container" class="toast-container"></div>
+    <div id="app">
+        <!-- Admin View -->
+        <section id="admin-view" class="screen active">
+            <header class="app-header glass-header">
+                <button class="icon-btn" onclick="app.logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                <h2>Admin Dashboard</h2>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="app.openThemeSettings()"><i class="fa-solid fa-palette"></i></button>
+                    <button class="icon-btn"><i class="fa-solid fa-calendar-day"></i></button>
+                </div>
+            </header>
+            <div class="admin-layout">
+                <aside class="admin-sidebar">
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('dashboard')" id="nav-page-dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('students')" id="nav-page-students"><i class="fa-solid fa-users"></i> Students</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('gatekeepers')" id="nav-page-gatekeepers"><i class="fa-solid fa-user-shield"></i> Gatekeepers</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('parents')" id="nav-page-parents"><i class="fa-solid fa-user-group"></i> Parents</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('id-cards')" id="nav-page-id-cards"><i class="fa-solid fa-address-card"></i> ID Cards</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('attendance')" id="nav-page-attendance"><i class="fa-solid fa-clipboard-user"></i> Attendance</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('notifications')" id="nav-page-notifications"><i class="fa-solid fa-bell"></i> Notifications</div>
+                    <div class="sidebar-nav-item active" onclick="app.navigateToAdminPage('classes')" id="nav-page-classes"><i class="fa-solid fa-chalkboard"></i> Classes</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('settings')" id="nav-page-settings"><i class="fa-solid fa-gear"></i> Settings</div>
+                </aside>
+                
+                <main class="admin-main-content">
+                    <div id="page-classes" class="admin-page active">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="color: var(--text-muted);">Class Management</h3>
+                            <button class="btn btn-primary btn-sm" onclick="app.openClassModal()"><i class="fa-solid fa-plus"></i> Add Class</button>
+                        </div>
+                        <div class="glass-panel">
+                            <div class="admin-toolbar">
+                                <div class="admin-filters">
+                                    <input type="text" id="class-search" class="custom-input" placeholder="Search by name or section..." oninput="app.renderClasses()">
+                                    <select id="class-status-filter" class="custom-select" onchange="app.renderClasses()">
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                        <option value="all">All Classes</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="table-container mt-4">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Class</th>
+                                            <th>Class Teacher</th>
+                                            <th>Subjects</th>
+                                            <th>Status</th>
+                                            <th style="text-align: right;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="class-list-body">
+                                        <!-- Populated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+
+        <!-- Manage Class CRUD Modal -->
+        <div id="manage-class-modal" class="modal">
+            <div class="modal-content glass-panel bounce-in" style="max-width: 450px; padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                    <h2 id="class-modal-title">Add New Class</h2>
+                    <button class="icon-btn" type="button" onclick="app.closeClassModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <form id="class-form" onsubmit="app.saveClass(event)">
+                    <input type="hidden" id="class-doc-id" value="">
+                    
+                    <div style="margin-bottom: 1.2rem; display: flex; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <label class="text-muted" style="font-size:0.85rem; display:block; margin-bottom: 0.3rem;">Class Name</label>
+                            <input type="text" id="class-name" class="custom-input w-100" placeholder="e.g. 5" required>
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="text-muted" style="font-size:0.85rem; display:block; margin-bottom: 0.3rem;">Section</label>
+                            <input type="text" id="class-section" class="custom-input w-100" placeholder="e.g. A" required>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.2rem;">
+                        <label class="text-muted" style="font-size:0.85rem; display:block; margin-bottom: 0.3rem;">Assign Class Teacher</label>
+                        <select id="class-teacher" class="custom-select w-100">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label class="text-muted" style="font-size:0.85rem; display:block; margin-bottom: 0.3rem;">Subjects (Comma Separated)</label>
+                        <input type="text" id="class-subjects" class="custom-input w-100" placeholder="e.g. Math, Science, English" required>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn btn-tertiary w-100" onclick="app.closeClassModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-floppy-disk"></i> Save Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> <!-- Close #app -->
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1WDzcL4c0e4g-wPHhCLKsehp8tjqKot4",
+            authDomain: "safegate-af378.firebaseapp.com",
+            projectId: "safegate-af378",
+            storageBucket: "safegate-af378.firebasestorage.app",
+            messagingSenderId: "164296559017",
+            appId: "1:164296559017:web:5c2aea0a001485404d1cb8",
+            measurementId: "G-2D89KKFCSR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+    </script>
+    <script src="app.js?v=2.2"></script>
+</body>
+</html>

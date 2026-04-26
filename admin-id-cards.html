@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SafeGate - Generate ID Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body data-theme="dark">
+    <div id="toast-container" class="toast-container"></div>
+    <div id="app">
+        <section id="admin-view" class="screen active">
+            <header class="app-header glass-header">
+                <button class="icon-btn" onclick="app.logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                <h2>Admin Dashboard</h2>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="app.openThemeSettings()"><i class="fa-solid fa-palette"></i></button>
+                    <button class="icon-btn"><i class="fa-solid fa-calendar-day"></i></button>
+                </div>
+            </header>
+            <div class="admin-layout">
+                <aside class="admin-sidebar">
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('dashboard')" id="nav-page-dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('students')" id="nav-page-students"><i class="fa-solid fa-users"></i> Students</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('gatekeepers')" id="nav-page-gatekeepers"><i class="fa-solid fa-user-shield"></i> Gatekeepers</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('parents')" id="nav-page-parents"><i class="fa-solid fa-user-group"></i> Parents</div>
+                    <div class="sidebar-nav-item active" onclick="app.navigateToAdminPage('id-cards')" id="nav-page-id-cards"><i class="fa-solid fa-address-card"></i> ID Cards</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('attendance')" id="nav-page-attendance"><i class="fa-solid fa-clipboard-user"></i> Attendance</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('notifications')" id="nav-page-notifications"><i class="fa-solid fa-bell"></i> Notifications</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('classes')" id="nav-page-classes"><i class="fa-solid fa-chalkboard"></i> Classes</div>
+                    <div class="sidebar-nav-item" onclick="app.navigateToAdminPage('settings')" id="nav-page-settings"><i class="fa-solid fa-gear"></i> Settings</div>
+                </aside>
+                
+                <main class="admin-main-content">
+                    <div id="page-id-cards" class="admin-page active">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                            <div>
+                                <button class="icon-btn text-primary" onclick="app.navigateToAdminPage('id-design')" title="Customize ID Template">
+                                    <i class="fa-solid fa-palette text-primary"></i> <span style="font-size: 0.9rem; font-weight: 600;">Design Template</span>
+                                </button>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary btn-sm" onclick="app.downloadGeneratedID('png')"><i class="fa-solid fa-image"></i> PNG</button>
+                                <button class="btn btn-secondary btn-sm" onclick="app.downloadGeneratedID('pdf')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            </div>
+                        </div>
+
+                        <div class="id-customizer-layout">
+                            <div class="customizer-controls glass-panel">
+                                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Generate ID Card</h3>
+                                
+                                <div class="control-group">
+                                    <label class="section-label">1. Select Student</label>
+                                    <input type="text" id="gen-student-search" class="custom-input w-100 mb-2" placeholder="Search by name or ID..." oninput="app.renderGenerateIDStudentList()">
+                                    
+                                    <div class="student-select-list" id="gen-student-list">
+                                        <!-- Student list populated dynamically -->
+                                    </div>
+                                </div>
+
+                                <div class="control-group mt-3">
+                                    <label class="section-label">2. Select Template</label>
+                                    <div class="template-selector-mini">
+                                        <div class="mini-option" onclick="app.previewGenerateTemplate('vertical')" id="gen-opt-vertical">
+                                            <div class="mini-box vertical"></div>
+                                            <span>Vertical</span>
+                                        </div>
+                                        <div class="mini-option" onclick="app.previewGenerateTemplate('horizontal')" id="gen-opt-horizontal">
+                                            <div class="mini-box horizontal"></div>
+                                            <span>Horizontal</span>
+                                        </div>
+                                        <div class="mini-option" onclick="app.previewGenerateTemplate('minimal')" id="gen-opt-minimal">
+                                            <div class="mini-box minimal"></div>
+                                            <span>Minimal</span>
+                                        </div>
+                                        <div class="mini-option" onclick="app.previewGenerateTemplate('detailed')" id="gen-opt-detailed">
+                                            <div class="mini-box detailed"></div>
+                                            <span>Detailed</span>
+                                        </div>
+                                        <div class="mini-option" onclick="app.previewGenerateTemplate('fauget')" id="gen-opt-fauget">
+                                            <div class="mini-box fauget"></div>
+                                            <span>College</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="customizer-preview">
+                                <div class="preview-sticky">
+                                    <label class="section-label text-center mb-4" style="color:var(--primary)">ID CARD PREVIEW</label>
+                                    <div class="template-preview-container" id="generate-id-render-area">
+                                        <div style="text-align:center; color: var(--text-muted);">Please select a student to preview</div>
+                                    </div>
+                                    <p class="text-hint text-center mt-3">Click PDF or PNG above to download.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1WDzcL4c0e4g-wPHhCLKsehp8tjqKot4",
+            authDomain: "safegate-af378.firebaseapp.com",
+            projectId: "safegate-af378",
+            storageBucket: "safegate-af378.firebasestorage.app",
+            messagingSenderId: "164296559017",
+            appId: "1:164296559017:web:5c2aea0a001485404d1cb8",
+            measurementId: "G-2D89KKFCSR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="app.js?v=2.2"></script>
+</body>
+</html>
